@@ -1,5 +1,6 @@
 const theme = {
   dark: true,
+  roundness: 4,
   colors: {
     primary: "rgb(235, 178, 255)",
     onPrimary: "rgb(82, 0, 113)",
@@ -17,11 +18,11 @@ const theme = {
     onError: "rgb(105, 0, 5)",
     errorContainer: "rgb(147, 0, 10)",
     onErrorContainer: "rgb(255, 180, 171)",
-    background: "rgb(30, 27, 30)",
+    background: "#334",
     onBackground: "rgb(232, 224, 229)",
-    surface: "rgb(30, 27, 30)",
+    surface: "#223",
     onSurface: "rgb(232, 224, 229)",
-    surfaceVariant: "rgb(76, 68, 77)",
+    surfaceVariant: "#334",
     onSurfaceVariant: "rgb(206, 195, 205)",
     outline: "rgb(151, 142, 151)",
     outlineVariant: "rgb(76, 68, 77)",
@@ -32,11 +33,11 @@ const theme = {
     inversePrimary: "rgb(140, 51, 179)",
     elevation: {
       level0: "transparent",
-      level1: "rgb(40, 35, 41)",
-      level2: "rgb(46, 39, 48)",
-      level3: "rgb(53, 44, 55)",
-      level4: "rgb(55, 45, 57)",
-      level5: "rgb(59, 48, 62)"
+      level1: "#334",
+      level2: "#334",
+      level3: "#334",
+      level4: "#334",
+      level5: "#334"
     },
     surfaceDisabled: "rgba(232, 224, 229, 0.12)",
     onSurfaceDisabled: "rgba(232, 224, 229, 0.38)",
