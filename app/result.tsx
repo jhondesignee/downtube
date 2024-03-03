@@ -3,7 +3,7 @@ import { View } from "react-native"
 import { Card, Text, Button, Divider, useTheme } from "react-native-paper"
 import { Stack, useFocusEffect } from "expo-router"
 import * as NavigationBar from "expo-navigation-bar"
-import Div from "#components/Div"
+import Template from "#components/Template"
 
 export default function ResultScreen() {
   const theme = useTheme()
@@ -15,7 +15,7 @@ export default function ResultScreen() {
   })
 
   return (
-    <Div>
+    <Template>
       <Card mode="contained">
         <Card.Content className="flex gap-y-4">
           {/* temporary */}
@@ -34,6 +34,6 @@ export default function ResultScreen() {
           )}
         </Card.Content>
       </Card>
-    </Div>
+    </Template>
   )
 }

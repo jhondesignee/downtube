@@ -1,10 +1,10 @@
 import { Text } from "react-native-paper"
-import Div from "#components/Div"
+import Template from "#components/Template"
 
 export default function DownloadsScreen() {
   return (
-    <Div>
+    <Template>
       <Text>downloads</Text>
-    </Div>
+    </Template>
   )
 }
