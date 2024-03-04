@@ -1,12 +1,18 @@
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import { View } from "react-native"
 import { Card, Text, Button, Divider, useTheme } from "react-native-paper"
-import { Stack, useFocusEffect } from "expo-router"
+import { Stack, useFocusEffect, useLocalSearchParams } from "expo-router"
 import * as NavigationBar from "expo-navigation-bar"
+import YouTubePlayer from "react-native-youtube-iframe"
+import getVideoId from "get-video-id"
 import Template from "#components/Template"
 
 export default function ResultScreen() {
   const theme = useTheme()
+  const params = useLocalSearchParams()
+  const [videoHeight, setVideoHeight] = useState(0)
+  const { id: videoId } = getVideoId(params.yt)
+
   useFocusEffect(() => {
     const onFocus = async () => {
       await NavigationBar.setBackgroundColorAsync(theme.colors.surface)
@@ -18,8 +24,12 @@ export default function ResultScreen() {
     <Template>
       <Card mode="contained">
         <Card.Content className="flex gap-y-4">
-          {/* temporary */}
-          <View className="w-full aspect-video bg-gray-600"></View>
+          <View
+            className="bg-black w-full aspect-video"
+            onLayout={event => setVideoHeight(event.nativeEvent.layout.height)}
+          >
+            <YouTubePlayer height={videoHeight} videoId={videoId} />
+          </View>
           <Text>Video infos</Text>
           <Button mode="contained" theme={{ roundness: 2 }}>
             DOWNLOAD
