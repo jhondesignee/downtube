@@ -11,7 +11,7 @@ export default function ResultScreen() {
   const theme = useTheme()
   const params = useLocalSearchParams()
   const [videoHeight, setVideoHeight] = useState(0)
-  const { id: videoId } = getVideoId(params.yt)
+  const videoId = getVideoId(params.yt as string)?.id || null
 
   useFocusEffect(() => {
     const onFocus = async () => {

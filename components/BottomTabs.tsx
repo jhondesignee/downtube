@@ -18,10 +18,7 @@ export default function BottomTabsComponent({ navigation, state, descriptors, in
         if (event.defaultPrevented) {
           preventDefault()
         } else {
-          navigation.dispatch({
-            ...navigation.navigate(route.name, route.params),
-            target: state.key
-          })
+          navigation.navigate(route.name)
         }
       }}
       renderIcon={({ route, focused, color }) => {
