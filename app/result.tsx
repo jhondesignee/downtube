@@ -3,15 +3,39 @@ import { View } from "react-native"
 import { Card, Text, Button, Divider, useTheme } from "react-native-paper"
 import { Stack, useFocusEffect, useLocalSearchParams } from "expo-router"
 import * as NavigationBar from "expo-navigation-bar"
+import * as ScreenOrientation from "expo-screen-orientation"
 import YouTubePlayer from "react-native-youtube-iframe"
 import getVideoId from "get-video-id"
 import Template from "#components/Template"
+
+type TOrientation = "portrait" | "landscape"
+
+function isYouTubeShorts(url: string): boolean {
+  return Boolean(url.match(/shorts/i))
+}
+
+async function toggleFullScreenOrientation(isFullScreen: boolean, orientation: TOrientation) {
+  const portraitOrientationEnum = 3
+  const landscapeOrientationEnum = 5
+  if (isFullScreen) {
+    if (orientation === "portrait") {
+      await ScreenOrientation.lockAsync(portraitOrientationEnum)
+    } else {
+      await ScreenOrientation.lockAsync(landscapeOrientationEnum)
+    }
+  } else {
+    await ScreenOrientation.unlockAsync()
+  }
+}
 
 export default function ResultScreen() {
   const theme = useTheme()
   const params = useLocalSearchParams()
   const [videoHeight, setVideoHeight] = useState(0)
-  const videoId = getVideoId(params.yt as string)?.id || null
+  const ytUrl = (params.yt as string) || null
+  const ytVideoId = getVideoId(ytUrl)?.id || null
+  const isYtShorts = isYouTubeShorts(ytUrl || "")
+  const ytVideoOrientation = isYtShorts ? "portrait" : "landscape"
 
   useFocusEffect(() => {
     const onFocus = async () => {
@@ -28,7 +52,13 @@ export default function ResultScreen() {
             className="bg-black w-full aspect-video"
             onLayout={event => setVideoHeight(event.nativeEvent.layout.height)}
           >
-            <YouTubePlayer height={videoHeight} videoId={videoId} />
+            <YouTubePlayer
+              height={videoHeight}
+              videoId={ytVideoId}
+              onFullScreenChange={isFullScreen =>
+                toggleFullScreenOrientation(isFullScreen, ytVideoOrientation)
+              }
+            />
           </View>
           <Text>Video infos</Text>
           <Button mode="contained" theme={{ roundness: 2 }}>
