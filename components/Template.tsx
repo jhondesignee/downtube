@@ -1,7 +1,7 @@
 import { ScrollView } from "react-native"
 import { useTheme } from "react-native-paper"
 
-export default function DivComponent({ children }) {
+export default function TemplateComponent({ children }) {
   const theme = useTheme()
 
   return (
