@@ -24,6 +24,7 @@
     "expo-linking": "~6.2.2",
     "expo-navigation-bar": "~2.8.1",
     "expo-router": "~3.4.7",
+    "expo-screen-orientation": "~6.4.1",
     "expo-status-bar": "~1.11.1",
     "get-video-id": "^4.1.5",
     "nativewind": "^2.0.11",

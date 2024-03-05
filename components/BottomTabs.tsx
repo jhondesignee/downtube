@@ -18,6 +18,8 @@ export default function BottomTabsComponent({ navigation, state, descriptors, in
         if (event.defaultPrevented) {
           preventDefault()
         } else {
+          // expected "route.name". works in production
+          // @ts-ignore
           navigation.navigate(route.name)
         }
       }}
