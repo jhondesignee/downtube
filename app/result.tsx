@@ -1,30 +1,18 @@
-import { useCallback, useState } from "react"
+import { useState } from "react"
 import { View } from "react-native"
 import { Card, Text, Button, Divider, useTheme } from "react-native-paper"
-import { Stack, useFocusEffect, useLocalSearchParams } from "expo-router"
+import { useFocusEffect, useLocalSearchParams } from "expo-router"
 import * as NavigationBar from "expo-navigation-bar"
-import * as ScreenOrientation from "expo-screen-orientation"
 import YouTubePlayer from "react-native-youtube-iframe"
-import getVideoId from "get-video-id"
 import Template from "#components/Template"
+import YouTubeVideoHandler from "#helpers/youtube-video-handler"
+import ScreenOrientationHandler, { Orientation } from "#helpers/screen-orientation-handler"
 
-type TOrientation = "portrait" | "landscape"
-
-function isYouTubeShorts(url: string): boolean {
-  return Boolean(url.match(/shorts/i))
-}
-
-async function toggleFullScreenOrientation(isFullScreen: boolean, orientation: TOrientation) {
-  const portraitOrientationEnum = 3
-  const landscapeOrientationEnum = 5
+async function fullScreenEventHandler(isFullScreen: boolean, orientation: Orientation) {
   if (isFullScreen) {
-    if (orientation === "portrait") {
-      await ScreenOrientation.lockAsync(portraitOrientationEnum)
-    } else {
-      await ScreenOrientation.lockAsync(landscapeOrientationEnum)
-    }
+    await ScreenOrientationHandler.lock(orientation)
   } else {
-    await ScreenOrientation.unlockAsync()
+    await ScreenOrientationHandler.unlock()
   }
 }
 
@@ -33,15 +21,17 @@ export default function ResultScreen() {
   const params = useLocalSearchParams()
   const [videoHeight, setVideoHeight] = useState(0)
   const ytUrl = (params.yt as string) || null
-  const ytVideoId = getVideoId(ytUrl)?.id || null
-  const isYtShorts = isYouTubeShorts(ytUrl || "")
-  const ytVideoOrientation = isYtShorts ? "portrait" : "landscape"
+  let ytHandler: YouTubeVideoHandler
+  if (ytUrl) {
+    ytHandler = new YouTubeVideoHandler(ytUrl)
+  }
+
+  async function focusEffect() {
+    await NavigationBar.setBackgroundColorAsync(theme.colors.surface)
+  }
 
   useFocusEffect(() => {
-    const onFocus = async () => {
-      await NavigationBar.setBackgroundColorAsync(theme.colors.surface)
-    }
-    onFocus()
+    focusEffect()
   })
 
   return (
@@ -54,9 +44,9 @@ export default function ResultScreen() {
           >
             <YouTubePlayer
               height={videoHeight}
-              videoId={ytVideoId}
+              videoId={ytHandler.id}
               onFullScreenChange={isFullScreen =>
-                toggleFullScreenOrientation(isFullScreen, ytVideoOrientation)
+                fullScreenEventHandler(isFullScreen, ytHandler.orientation)
               }
             />
           </View>
@@ -64,14 +54,6 @@ export default function ResultScreen() {
           <Button mode="contained" theme={{ roundness: 2 }}>
             DOWNLOAD
           </Button>
-          {true && (
-            <View>
-              <Divider />
-              <Button icon="share" textColor={theme.colors.tertiary}>
-                COMPARTILHAR
-              </Button>
-            </View>
-          )}
         </Card.Content>
       </Card>
     </Template>

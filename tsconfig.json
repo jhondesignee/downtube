@@ -6,5 +6,6 @@
       "#helpers/*": ["./helpers/*"]
     }
   },
+  "includes": ["./app.d.ts"],
   "extends": "expo/tsconfig.base"
 }

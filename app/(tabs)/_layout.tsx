@@ -1,31 +1,46 @@
+import { useTheme } from "react-native-paper"
 import { Tabs } from "expo-router"
 import BottomTabs from "#components/BottomTabs"
 import Header from "#components/Header"
+import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 
-// omit the "tabBarIcon" property to pass it as a string instead of as a function
-// this way avoid code boilerplate by passing the function once in the header
-// only works with the actual custom header
-// intended to change this behavior
-type TOmitTabBarIconProp = Omit<typeof Tabs.Screen, "tabBarIcon">
+interface IconOptions {
+  icon: string
+  focused: boolean
+  color: string
+  size: number
+}
+
+const tabs = [
+  { name: "index", label: "home", icon: "home" },
+  { name: "downloads", label: "Downloads", icon: "download" },
+  { name: "settings", label: "Configurações", icon: "cog" }
+]
 
 export default function TabsLayout() {
+  const theme = useTheme()
+
+  function getIcon({ icon, focused, color, size }: IconOptions): Icon {
+    const iconColor = focused ? theme.colors.onTertiary : color
+    return <Icon name={icon} color={color} size={size} />
+  }
+
   return (
     <Tabs
       screenOptions={{ header: props => <Header {...props} /> }}
       tabBar={props => <BottomTabs {...props} />}
     >
-      <Tabs.Screen
-        name="index"
-        options={{ tabBarLabel: "Início", tabBarIcon: "home" } as TOmitTabBarIconProp}
-      />
-      <Tabs.Screen
-        name="downloads"
-        options={{ tabBarLabel: "Downloads", tabBarIcon: "download" } as TOmitTabBarIconProp}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{ tabBarLabel: "Configurações", tabBarIcon: "cog" } as TOmitTabBarIconProp}
-      />
+      {tabs.map(tabOptions => {
+        return (
+          <Tabs.Screen
+            name={tabOptions.name}
+            options={{
+              tabBarLabel: tabOptions.label,
+              tabBarIcon: props => getIcon({ icon: tabOptions.icon, ...props })
+            }}
+          />
+        )
+      })}
     </Tabs>
   )
 }

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Appbar, Menu, useTheme } from "react-native-paper"
+import { Appbar, useTheme } from "react-native-paper"
 import { Link } from "expo-router"
 
 export default function HeaderComponent({ navigation, route, back = null, options }) {

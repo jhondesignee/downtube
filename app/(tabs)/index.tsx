@@ -1,64 +1,49 @@
 import { useState, useEffect } from "react"
-import { View } from "react-native"
-import {
-  ActivityIndicator,
-  Snackbar,
-  Portal,
-  Dialog,
-  Text,
-  TextInput,
-  Card,
-  Button,
-  useTheme
-} from "react-native-paper"
+import { Snackbar, Portal, TextInput, Button, useTheme } from "react-native-paper"
 import { useFocusEffect, useRouter } from "expo-router"
-import axios from "axios"
 import * as NavigationBar from "expo-navigation-bar"
 import * as Clipboard from "expo-clipboard"
 import Template from "#components/Template"
-import isYouTubeUrl from "#helpers/isYTUrl"
+import LoadingDialog from "#components/LoadingDialog"
+import YouTubeVideoHandler from "#helpers/youtube-video-handler"
 
-async function pasteFromClipboard(): Promise<string> {
+async function getClipboardContent(): Promise<string> {
   return await Clipboard.getStringAsync()
 }
 
-async function urlExists(url: string): Promise<boolean> {
-  try {
-    return (await axios.head(url)).status !== 404
-  } catch {
-    return false
-  }
-}
-
-async function delay(ms: number) {
+async function delay(ms: number): Promise<void> {
   await new Promise(resolve => setTimeout(resolve, ms))
 }
 
 export default function IndexScreen() {
   const theme = useTheme()
   const router = useRouter()
-  const [urlInput, setUrlInput] = useState("")
+  const [urlInputValue, setUrlInputValue] = useState("")
   const [loadingDialogVisible, setLoadingDialogVisible] = useState(false)
   const [snackbarVisible, setSnackbarVisible] = useState(false)
-  const loadingDialogDelay = 250
-  const goToResult = async () => {
+  const navigationDelay = 250
+
+  async function navigateToResult() {
+    const path = "/result"
     setLoadingDialogVisible(true)
-    await delay(loadingDialogDelay)
-    if (await urlExists(urlInput)) {
-      setLoadingDialogVisible(false)
-      router.push({ pathname: "/result", params: { yt: urlInput } })
+    await delay(navigationDelay)
+    if (YouTubeVideoHandler.isYouTubeUrl(urlInputValue)) {
+      router.push({ pathname: path, params: { yt: urlInputValue } })
     } else {
       setSnackbarVisible(true)
-      setLoadingDialogVisible(false)
     }
+    setLoadingDialogVisible(false)
   }
-  const focusEffect = async () => {
+
+  async function focusEffect() {
     await NavigationBar.setBackgroundColorAsync(theme.colors.surfaceVariant)
   }
-  const effect = async () => {
-    const clipboardContent = await pasteFromClipboard()
-    if (isYouTubeUrl(clipboardContent)) {
-      setUrlInput(clipboardContent)
+
+  async function effect() {
+    const clipboardContent = await getClipboardContent()
+
+    if (YouTubeVideoHandler.isYouTubeUrl(clipboardContent)) {
+      setUrlInputValue(clipboardContent)
     }
   }
 
@@ -73,9 +58,9 @@ export default function IndexScreen() {
     <Template>
       <TextInput
         mode="outlined"
-        value={urlInput}
-        onChangeText={value => setUrlInput(value)}
-        placeholder="cole o link aqui"
+        value={urlInputValue}
+        onChangeText={value => setUrlInputValue(value)}
+        placeholder="link do vídeo do YouTube"
         maxLength={2048}
         placeholderTextColor="grey"
         selectionColor={theme.colors.tertiary}
@@ -84,21 +69,19 @@ export default function IndexScreen() {
         right={
           <TextInput.Icon
             icon="clipboard"
-            onPress={async () => setUrlInput(await pasteFromClipboard())}
+            onPress={async () => setUrlInputValue(await getClipboardContent())}
           />
         }
       />
-      <Button mode="contained" theme={{ roundness: 2 }} onPress={goToResult}>
+      <Button mode="contained" theme={{ roundness: 2 }} onPress={navigateToResult}>
         DOWNLOAD
       </Button>
       <Portal>
-        <Dialog visible={loadingDialogVisible} dismissable={false}>
-          <Dialog.Title>Buscando informações</Dialog.Title>
-          <Dialog.Content className="flex flex-row gap-4 items-center">
-            <ActivityIndicator size="large" />
-            <Text>Carregando...</Text>
-          </Dialog.Content>
-        </Dialog>
+        <LoadingDialog
+          title="Buscando informações"
+          content="Carregando.."
+          visible={loadingDialogVisible}
+        />
         <Snackbar
           visible={snackbarVisible}
           onDismiss={() => setSnackbarVisible(false)}
